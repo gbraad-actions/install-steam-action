@@ -1,0 +1,68 @@
+name: 'Install Steam'
+description: 'Installs Steam on a runner (Windows or Ubuntu)'
+
+inputs:
+  steam_install_path:
+    description: 'The path where Steam will be installed (Windows only)'
+    required: false
+    default: 'C:\\Steam'
+
+runs:
+  using: 'composite'
+  steps:
+    # Windows Installation Steps
+    - name: 'Windows: Download Steam Installer'
+      if: ${{ runner.os == 'Windows' }}
+      run: |
+        curl -o SteamSetup.exe https://cdn.cloudflare.steamstatic.com/client/installer/SteamSetup.exe
+      shell: cmd
+
+    - name: 'Windows: Install Steam'
+      if: ${{ runner.os == 'Windows' }}
+      run: |
+        start /wait SteamSetup.exe /S
+      shell: cmd
+
+    - name: 'Windows: Verify Installation'
+      if: ${{ runner.os == 'Windows' }}
+      run: |
+        if not exist "C:\\Program Files (x86)\\Steam\\steam.exe" (
+          echo Steam installation failed
+          exit 1
+        ) else (
+          echo Steam installed successfully
+        )
+      shell: cmd
+
+    - name: 'Windows: Cleanup Temporary Files'
+      if: ${{ runner.os == 'Windows' }}
+      run: |
+        del SteamSetup.exe
+      shell: cmd
+
+    # Ubuntu Installation Steps
+    - name: 'Ubuntu: Update and Install Steam'
+      if: ${{ env.os == 'Linux' }}
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y curl
+        curl -o steam.deb https://cdn.cloudflare.steamstatic.com/client/installer/steam.deb
+        sudo apt-get install -y ./steam.deb
+      shell: bash
+
+    - name: 'Ubuntu: Verify Installation'
+      if: ${{ env.os == 'Linux' }}
+      run: |
+        if ! command -v steam &> /dev/null; then
+          echo "Steam installation failed"
+          exit 1
+        else
+          echo "Steam installed successfully"
+        fi
+      shell: bash
+
+    - name: 'Ubuntu: Cleanup Temporary Files'
+      if: ${{ runner.os == 'Linux' }}
+      run: |
+        rm -f steam.deb
+      shell: bash
