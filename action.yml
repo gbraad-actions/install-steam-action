@@ -1,12 +1,6 @@
 name: 'Install Steam'
 description: 'Installs Steam on a runner (Windows or Ubuntu)'
 
-inputs:
-  steam_install_path:
-    description: 'The path where Steam will be installed (Windows only)'
-    required: false
-    default: 'C:\\Steam'
-
 runs:
   using: 'composite'
   steps:
