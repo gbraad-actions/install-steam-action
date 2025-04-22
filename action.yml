@@ -33,6 +33,12 @@ runs:
           echo Steam installed successfully
         )
       shell: cmd
+      
+    - name: 'Windows: Add Steam to PATH'
+      if: ${{ runner.os == 'Windows' }}
+      run: |
+        setx PATH "%PATH%;C:\\Program Files (x86)\\Steam"
+      shell: cmd
 
     - name: 'Windows: Cleanup Temporary Files'
       if: ${{ runner.os == 'Windows' }}
